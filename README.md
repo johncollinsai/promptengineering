@@ -1,3 +1,3 @@
-# Playing with prompt engineering
+# Prompt engineering
 
-Baby webapp for playing with prompt engineering feature on johncollins.ai, May 2023
+GPT4 webapp exploring prompt engineering contructs. Model: OpenAI GPT-4. Frontend: Flask, HTML, CSS, and JavaScript. Fetch API: Asynchronous data fetching and communication.
