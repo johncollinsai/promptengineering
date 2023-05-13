@@ -13,16 +13,16 @@ def get_api_key():
 
 api_key = get_api_key()
 
-async def generate_gpt4_response(prompt, modality, api_key):
+def generate_gpt4_response(prompt, modality, api_key):
     is_valid = validate_company_name_gpt(prompt, modality, api_key)
     if not is_valid:
         raise ValueError(f"Invalid company name: {prompt}")
 
-    if modality == "business analyst":
-        intro_sentence = f"This preliminary business analysis of {prompt} has identified the following key insights:"
+    if modality == "raw":
+        intro_sentence = f"This response for {prompt} is a raw response from the GPT-4 model:"
         user_prompt = f"Please generate a response about {prompt} from the perspective of a business analyst. Start with this introduction sentence: '{intro_sentence}' Then list the most important business analysis insights using the bullet point format • "
-    elif modality == "financial analyst":
-        intro_sentence = f"This preliminary financial analysis of {prompt} reports upon its assets and liabilities, cashflows and liquidity, and provides 4 key ratios for the company:"
+    elif modality == "engineered":
+        intro_sentence = f"This response for {prompt} has been engineered to provide a cleaner and more specfic response. In this case, we are seeking to obtain information regarding the financial status of {prompt}:"
         user_prompt = f"""Please generate a response about {prompt} from the perspective of an financial analyst. Start with this introduction sentence: '{intro_sentence}'.  
         ASSETS & LIABILITIES
         List 4 recent and most important asset and liability facts for {prompt} using the bullet point format •
@@ -30,16 +30,6 @@ async def generate_gpt4_response(prompt, modality, api_key):
         List 4 recent insights regarding cashflows and liquidity information for {prompt} using the bullet point format •
         KEY FINANCIAL RATIOS
         List the 4 most important financial ratios for {prompt} using the bullet point format •
-        """
-    elif modality == "investigator":
-        intro_sentence = f"This preliminary investigation of {prompt} has examined general investigative, corporate, and compliance information, and compiled the following results:"
-        user_prompt = f"""Please generate a response about {prompt} from the perspective of an investigator. Start with this introduction sentence: '{intro_sentence}'.
-        GENERAL INVESTIGATIVE INFORMATION
-        List 4 things that recent investigations have revealed for {prompt} using the bullet point format •
-        CORPORATE INFORMATION
-        List the 4 most important corporate facts for {prompt} using the bullet point format •
-        COMPLIANCE INFORMATION
-        List the 4 most important compliance findings for {prompt} using the bullet point format •
         """
     else:
         raise ValueError("Modality must be one of 'business analyst', 'investigator', or 'financial analyst'.")
@@ -61,8 +51,8 @@ async def generate_gpt4_response(prompt, modality, api_key):
             temperature=0.3,  # Decrease temperature to make output more conservative
         )
 
-    # Use the event loop to run the synchronous OpenAI call in a separate thread
-    response = await loop.run_in_executor(None, create_chat_completion)
+    # Use asyncio.run() here to execute the async logic
+    response = asyncio.run(loop.run_in_executor(None, create_chat_completion))
 
     print("GPT-4 Response:", response)  # print statements to see the values of variables and the response from the GPT-4 API
 
