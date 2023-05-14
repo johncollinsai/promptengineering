@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
         ]);
     }
 
-    async function fetchData(prompt) {
+    async function fetchData(prompt, endpoint) {
         try {
-            const response = await fetchWithTimeout("/get_completion", {
+            const response = await fetchWithTimeout(endpoint, {
                 method: "POST",
                 body: new FormData(promptForm),
             }, 180000); // Set the timeout to 3 minutes (180000 milliseconds)
@@ -47,31 +47,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const prompt = promptForm.elements["prompt"].value;
         
         try {
-            const result = await fetchData(prompt);
-    
-            if (result.success) {
-                const resultHTML1 = `<h3>Modality: Raw</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${result.response.raw}</pre>`;
-                const resultHTML2 = `<h3>Modality: Engineered</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${result.response.engineered}</pre>`;
-                displayResult(resultHTML1, resultHTML2);
+            // Fetch raw response and update the DOM
+            const rawResult = await fetchData(prompt, "/get_raw_response");
+
+            if (rawResult.success) {
+                const resultHTML1 = `<h3>Modality: Raw</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${rawResult.response}</pre>`;
+                displayResult(resultModel1, resultHTML1);
             } else {
-                displayError(result.error);
+                displayError(resultModel1, rawResult.error);
+            }
+
+            // Fetch engineered response and update the DOM
+            const engineeredResult = await fetchData(prompt, "/get_engineered_response");
+
+            if (engineeredResult.success) {
+                const resultHTML2 = `<h3>Modality: Engineered</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${engineeredResult.response}</pre>`;
+                displayResult(resultModel2, resultHTML2);
+            } else {
+                displayError(resultModel2, engineeredResult.error);
             }
         } catch (error) {
-            displayError("An error occurred while processing the request. Please try again later.");
+            displayError(resultModel1, "An error occurred while processing the request. Please try again later.");
+            displayError(resultModel2, "An error occurred while processing the request. Please try again later.");
         }
         
         toggleSpinner(false);
     }
 
-    function displayResult(result1, result2) {
-        resultModel1.innerHTML = result1;
-        resultModel2.innerHTML = result2;
+    function displayResult(resultModel, resultHTML) {
+        resultModel.innerHTML = resultHTML;
     }
     
-    function displayError(message) {
-        resultModel1.innerHTML = `<p class="text-danger">${message}</p>`;
-        resultModel2.innerHTML = `<p class="text-danger">${message}</p>`;
+    function displayError(resultModel, message) {
+        resultModel.innerHTML = `<p class="text-danger">${message}</p>`;
     }
 
     promptForm.addEventListener('submit', handleFormSubmit);
 });
+
