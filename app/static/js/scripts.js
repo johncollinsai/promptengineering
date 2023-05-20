@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const rawResult = await fetchData(prompt, "/get_raw_response");
 
             if (rawResult.success) {
-                const resultHTML1 = `<h3>Modality: Raw</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${rawResult.response}</pre>`;
+                const resultHTML1 = `<h3>Raw response</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${rawResult.response}</pre>`;
                 displayResult(resultModel1, resultHTML1);
             } else {
                 displayError(resultModel1, rawResult.error);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const engineeredResult = await fetchData(prompt, "/get_engineered_response");
 
             if (engineeredResult.success) {
-                const resultHTML2 = `<h3>Modality: Engineered</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${engineeredResult.response}</pre>`;
+                const resultHTML2 = `<h3>Engineered response</h3><h5 class="text-lightgrey">Company: ${prompt}</h5><pre>${engineeredResult.response}</pre>`;
                 displayResult(resultModel2, resultHTML2);
             } else {
                 displayError(resultModel2, engineeredResult.error);
